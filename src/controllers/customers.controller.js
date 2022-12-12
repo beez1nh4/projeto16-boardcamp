@@ -12,7 +12,7 @@ export async function getCustomers(req, res){
 export async function getCustomersById(req, res){
     const {id} = req.params;
     try{
-        const {rows} = await connectionDB.query("SELECT * FROM customers WHERE id=$1;"
+        const {rows} = await connectionDB.query('SELECT * FROM customers WHERE id=$1;',
         [id]
         );
         if (rows[0]){
