@@ -11,12 +11,12 @@ export async function categoryValidation(req, res, next){
         return res.status(400).send(errors);
       }
 
-    const nameExists = await connectionDB.query(
+    const categoryExists = await connectionDB.query(
         "SELECT * FROM categories WHERE name=$1",
         [category.name]
     );
-  
-    if (nameExists) {
+
+    if (categoryExists.rows[0]) {
         return res
           .status(409)
           .send({ message: "Essa categoria já existe!" });
