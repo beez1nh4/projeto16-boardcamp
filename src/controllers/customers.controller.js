@@ -38,10 +38,11 @@ export async function postCustomers(req, res){
 }
 
 export async function putCustomers(req, res){
+    const {id} = req.params;
     const {name, phone, cpf, birthday} = req.body;
     try{
-        await connectionDB.query("UPDATE customers SET (name, phone, cpf, birthday) VALUES ($1, $2, $3, $4);",
-        [name, phone, cpf, birthday]
+        await connectionDB.query("UPDATE customers SET name=$1, phone=$2, cpf=$3, birthday=$4 WHERE id=$5;",
+        [name, phone, cpf, birthday, id],
         );
         res.sendStatus(201);
     } catch (err){
