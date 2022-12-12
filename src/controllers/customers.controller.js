@@ -15,17 +15,21 @@ export async function getCustomersById(req, res){
         const {rows} = await connectionDB.query("SELECT * FROM customers WHERE id=$1;"
         [id]
         );
+        if (rows[0]){
         res.send(rows);
+        } else {
+            res.sendStatus(404);
+        }
     } catch (err){
         res.status(500).send(err.message);
     }
 }
 
 export async function postCustomers(req, res){
-    const {name} = req.body;
+    const {name, phone, cpf, birthday} = req.body;
     try{
-        await connectionDB.query("INSERT INTO categories (name) VALUES ($1);",
-        [name]
+        await connectionDB.query("INSERT INTO customers (name, phone, cpf, birthday) VALUES ($1, $2, $3, $4);",
+        [name, phone, cpf, birthday]
         );
         res.sendStatus(201);
     } catch (err){
@@ -34,10 +38,10 @@ export async function postCustomers(req, res){
 }
 
 export async function putCustomers(req, res){
-    const {name} = req.body;
+    const {name, phone, cpf, birthday} = req.body;
     try{
-        await connectionDB.query("INSERT INTO categories (name) VALUES ($1);",
-        [name]
+        await connectionDB.query("UPDATE customers SET (name, phone, cpf, birthday) VALUES ($1, $2, $3, $4);",
+        [name, phone, cpf, birthday]
         );
         res.sendStatus(201);
     } catch (err){
