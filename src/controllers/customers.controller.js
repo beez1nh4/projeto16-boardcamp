@@ -4,10 +4,10 @@ export async function getCustomers(req, res){
     const {cpf} = req.query;
     try{
         if (cpf){
-            const customer = await connectionDB.query("SELECT * FROM customers WHERE customers.cpf LIKE $1;",
+            const customer = await connectionDB.query('SELECT * FROM customers WHERE customers.cpf LIKE $1;',
             [`${cpf}%`]
             );
-            return res.send(customer);
+            return res.send(customer.rows);
         }
         const {rows} = await connectionDB.query("SELECT * FROM customers;");
         res.send(rows);
