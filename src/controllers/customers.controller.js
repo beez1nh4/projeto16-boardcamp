@@ -1,7 +1,14 @@
 import { connectionDB } from "../database/db.js";
 
 export async function getCustomers(req, res){
+    const {cpf} = req.query;
     try{
+        if (cpf){
+            const customer = await connectionDB.query("SELECT * FROM customers WHERE customers.cpf LIKE $1;",
+            [`${cpf}%`]
+            );
+            return res.send(customer);
+        }
         const {rows} = await connectionDB.query("SELECT * FROM customers;");
         res.send(rows);
     } catch (err){

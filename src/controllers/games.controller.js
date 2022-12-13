@@ -17,9 +17,9 @@ export async function getGames(req, res){
                 WHERE games.name LIKE $1
                 ;
                 `,
-                [`${formatName2}`]
+                [`${formatName2}%`]
                 );
-            res.send(rows);
+            return res.send(gamesByName);
         }
         const {rows} = await connectionDB.query(
             `SELECT games.*, categories.name AS "categoryName"
