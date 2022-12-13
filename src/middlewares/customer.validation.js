@@ -12,7 +12,7 @@ export async function customerValidation(req, res, next){
       }
 
     const customerExists = await connectionDB.query(
-        'SELECT * FROM customers WHERE cpf=$1',
+        'SELECT * FROM customers WHERE cpf=$1;',
         [customer.cpf]
     );
 

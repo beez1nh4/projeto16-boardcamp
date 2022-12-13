@@ -22,6 +22,20 @@ export async function postRentals(req, res){
     const {customerId, gameId, daysRented} = req.body;
     const rentDate = dayjs().format('YYYY-MM-DD');
     try{
+        const rentals = await connectionDB.query(
+            'SELECT * FROM rentals WHERE "gameId"=$1;',
+            [gameId]
+        );
+        
+        const stock = await connectionDB.query(
+            'SELECT "stockTotal" FROM games WHERE "gameId"=$1;',
+            [gameId]
+        );
+
+        if (rentals.rows.length > stock.rows[0].stockTotal){
+            return res.sendStatus(400)
+        }
+
         const gamePrice = await connectionDB.query('SELECT "pricePerDay" FROM games WHERE id=$1;', [gameId])
         
         const {pricePerDay} = gamePrice.rows[0]
@@ -49,6 +63,12 @@ export async function postRentalsReturn(req, res){
         } else{
 
         const rental = await connectionDB.query('SELECT * FROM rentals WHERE id=$1;', [id]);
+        const priceToPayDay = rental.rows[0].originalPrice / rental.rows[0].daysRented;
+
+        const daysLate = dayjs(rental.rows[0].returnDate).diff(dayjs(rental.rows[0].rentDate))
+        
+        const delayFee = Number(daysLate*priceToPayDay)
+
         const returnDateSet = dayjs().format('YYYY-MM-DD');
 
         await connectionDB.query('UPDATE rentals "returnDate"=$1, "delayFee"=$2 WHERE id=$3;',

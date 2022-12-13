@@ -12,7 +12,7 @@ export async function categoryValidation(req, res, next){
       }
 
     const categoryExists = await connectionDB.query(
-        "SELECT * FROM categories WHERE name=$1",
+        "SELECT * FROM categories WHERE name=$1;",
         [category.name]
     );
 

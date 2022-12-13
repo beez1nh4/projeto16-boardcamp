@@ -12,7 +12,7 @@ export async function gameValidation(req, res, next){
       }
 
     const nameExists = await connectionDB.query(
-        "SELECT * FROM games WHERE name=$1",
+        "SELECT * FROM games WHERE name=$1;",
         [game.name]
     );
   
