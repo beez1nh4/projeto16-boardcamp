@@ -107,23 +107,29 @@ export async function postRentalsReturn(req, res){
         if (returnDate !== null){
             return res.sendStatus(400)
         } else{
+        
+        const returnDateSet = dayjs().format('YYYY-MM-DD');
+        await connectionDB.query('UPDATE rentals SET "returnDate"=$1 WHERE id=$2;',
+        [returnDateSet,id]
+        );
 
         const rental = await connectionDB.query('SELECT * FROM rentals WHERE id=$1;', [id]);
-        const priceToPayDay = rental.rows[0].originalPrice / rental.rows[0].daysRented;
-
-        const daysLate = dayjs(rental.rows[0].returnDate).diff(dayjs(rental.rows[0].rentDate))
+        const priceToPayDay = Number(rental.rows[0].originalPrice) / Number(rental.rows[0].daysRented);
+        const devolution = dayjs(dayjs().format('YYYY-MM-DD'))
+        const rent = rental.rows[0].rentDate
+        const daysLate = devolution.diff(dayjs(rent), "day")
         
-        const delayFee = Number(daysLate*priceToPayDay)
+        const delayFee = daysLate*priceToPayDay
 
-        const returnDateSet = dayjs().format('YYYY-MM-DD');
-
-        await connectionDB.query('UPDATE rentals "returnDate"=$1, "delayFee"=$2 WHERE id=$3;',
+       await connectionDB.query('UPDATE rentals SET "returnDate"=$1, "delayFee"=$2 WHERE id=$3;',
         [returnDateSet, delayFee, id]
-        );
-        res.sendStatus(201);
+        ); 
+        res.sendStatus(200);
+        
         }
     } catch (err){
         res.status(500).send(err.message);
+        
     }
 }
 

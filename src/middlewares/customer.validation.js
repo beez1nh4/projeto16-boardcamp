@@ -24,3 +24,4 @@ export async function customerValidation(req, res, next){
     
     next()
 }
+
