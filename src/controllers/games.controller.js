@@ -1,7 +1,26 @@
 import { connectionDB } from "../database/db.js";
 
 export async function getGames(req, res){
+    const {name} = req.query;
+
     try{
+        if (name){
+            //only first letter upper case
+            const formatName1 = name.toLowerCase()
+            const formatName2 = formatName1[0].toUpperCase + formatName1.substring(1)
+
+            const gamesByName = await connectionDB.query(
+                `SELECT games.*, categories.name AS "categoryName"
+                FROM games
+                JOIN categories
+                ON games."categoryId" = categories.id
+                WHERE games.name LIKE $1
+                ;
+                `,
+                [`${formatName2}`]
+                );
+            res.send(rows);
+        }
         const {rows} = await connectionDB.query(
             `SELECT games.*, categories.name AS "categoryName"
             FROM games

@@ -2,17 +2,47 @@ import { connectionDB } from "../database/db.js";
 import dayjs from "dayjs";
 
 export async function getRentals(req, res){
+    const {gameId, customerId} = req.query;
+
+    if (gameId){
+        try{
+            const gamesRentals = await connectionDB.query(
+                'SELECT * FROM rentals WHERE "gameId"=$1;',
+                [gameId]
+            );
+            res.send(gamesRentals.rows)
+        }
+        catch (err){
+            res.status(500).send(err.message);
+        }
+    }
+    
+    if (customerId){
+        try{
+            const customerRentals = await connectionDB.query(
+                'SELECT * FROM rentals WHERE "customerId"=$1;',
+                [customerId]
+            );
+            res.send(customerRentals.rows)
+        }
+        catch (err){
+            res.status(500).send(err.message);
+        }
+    }
+
     try{
+        const newRentals = [];
+
         const {rows} = await connectionDB.query(
-            `SELECT rentals.*, customer.id, customer.name, games.*
+            `SELECT *
             FROM rentals
             JOIN customers
-            ON rentals."customerId" = customers.id
+            ON rentals."customerId" = customer.id
             JOIN games
             ON rentals."gameId" = games.id
             ;
             `)
-        res.send(rows);
+        res.status(200).send(rows);
     } catch (err){
         res.status(500).send(err.message);
     }
