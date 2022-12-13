@@ -21,6 +21,16 @@ export async function gameValidation(req, res, next){
           .status(409)
           .send({ message: "Esse jogo já existe!" });
       }
-    
+
+    const categoryExists = await connectionDB.query(
+        "SELECT * FROM categories WHERE id=$1;",
+        [game.categoryId]
+    );
+  
+    if (!categoryExists.rows[0]) {
+        return res
+          .status(400)
+          .send({ message: "Essa categoria não existe!" });
+      }
     next()
 }
