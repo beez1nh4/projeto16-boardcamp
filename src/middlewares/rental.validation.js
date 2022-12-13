@@ -40,3 +40,20 @@ export async function idCustomerValidation(req, res, next){
   
   next()
 }
+
+export async function idRentalValidation(req, res, next){
+  const {id} = req.params;
+  
+  const idExists = await connectionDB.query(
+      "SELECT * FROM rentals WHERE id=$1;",
+      [id]
+  );
+
+  if (!idExists.rows[0]) {
+      return res
+        .status(404)
+        .send({ message: "Esse aluguel não existe!" });
+    }
+  
+  next()
+}
